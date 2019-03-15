@@ -53,7 +53,8 @@ Choose the following options in the Work Loads -> Visual C++ build tools -> Opti
 - Testing tools core features - Build Tools
 - Visual C++ ATL for x86 and x64
 - VC++ 2015.3 v14.00 (v140) toolset for desktop
-- Choose the following options in the Work Loads -> Visual C++ build tools -> Individual Components
+
+Choose the following options in the Work Loads -> Visual C++ build tools -> Individual Components
 - Windows Universal CRT SDK
 - Windows 8.1 SDK
 
