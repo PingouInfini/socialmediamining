@@ -9,11 +9,14 @@ create an app & get twitter tokens from https://developer.twitter.com/en/apps
 ###### 2° Autres modules
 - 2D plotting [twitter_get_wordcloud_from_user_timeline]  
     
-        pip install matplotlib
+
+    pip install matplotlib
 
 - wordcloud [twitter_get_wordcloud_from_user_timeline]
 
-        pip install wordcloud
+        
+    pip install wordcloud
+=== Others ===  
     
     pip install Pillow
     pip install nltk
