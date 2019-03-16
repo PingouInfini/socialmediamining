@@ -25,7 +25,7 @@ if __name__ == '__main__':
     all_tweets = ""
     languages = Counter()
 
-    for page in Cursor(client.user_timeline, screen_name=user, count=20).pages(1):
+    for page in Cursor(client.user_timeline, screen_name=user, count=200).pages(16):
         for status in page:
             all_tweets += ''.join(
                 re.sub(r'(https|http)?:\/\/(\w|\.|\/|\?|\=|\&|\%)*\b', '', status.text, flags=re.MULTILINE))

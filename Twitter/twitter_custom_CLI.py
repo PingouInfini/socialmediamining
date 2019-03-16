@@ -55,7 +55,6 @@ def get_all_tweets(argv):
             mediaoutput = arg
             logging.debug("media: " + mediaoutput)
 
-
     # get_credentials_from_file (used for twitter connection)
     consumer_key, consumer_secret, access_key, access_secret = get_credentials_from_file()
 
@@ -90,25 +89,26 @@ def get_all_tweets(argv):
         logging.debug("getting tweets before %s" % (oldest))
 
         nb_TW_to_get = min((int(count) - nb_TW_already_get), 100)
-        
-		#all subsiquent requests use the max_id param to prevent duplicates
+
+        # all subsiquent requests use the max_id param to prevent duplicates
         if twitter_user_name != "":
-            new_tweets = api.user_timeline(screen_name = twitter_user_name,count=nb_TW_to_get,max_id=oldest,tweet_mode="extended")
+            new_tweets = api.user_timeline(screen_name=twitter_user_name, count=nb_TW_to_get, max_id=oldest,
+                                           tweet_mode="extended")
 
         if data != "":
-            new_tweets = api.search(q=data, count=nb_TW_to_get,max_id=oldest,tweet_mode="extended")
+            new_tweets = api.search(q=data, count=nb_TW_to_get, max_id=oldest, tweet_mode="extended")
 
-        #save most recent tweets
+        # save most recent tweets
         alltweets.extend(new_tweets)
         nb_TW_already_get += nb_TW_to_get
 
-        #save tweets as json files
+        # save tweets as json files
         save_tweets_as_json(new_tweets, output)
         # save media if asked
         if (getimage):
             save_media(new_tweets, mediaoutput)
 
-        #update the id of the oldest tweet less one
+        # update the id of the oldest tweet less one
         oldest = alltweets[-1].id - 1
         logging.debug("...%s tweets downloaded so far" % (len(alltweets)))
 
@@ -117,12 +117,13 @@ def get_all_tweets(argv):
 
     pass
 
+
 def print_help():
     print ('NAME')
-    print('\tgetAllTweet.py - get tweet from twitter account or specific data')
+    print('\ttwitter_custom_CLI.py - get tweet from twitter account or specific data')
     print ('\nSYNOPSIS')
-    print('\tgetAllTweet.py -u <twitter_user_name> [OPTION]...')
-    print('\tgetAllTweet.py -d <data> [OPTION]...')
+    print('\ttwitter_custom_CLI.py -u <twitter_user_name> [OPTION]...')
+    print('\ttwitter_custom_CLI.py -d <data> [OPTION]...')
     print ('\nDESCRIPTION')
     print ('\t-c, --count')
     print ('\t\tmaximum number of tweet to get')
@@ -137,6 +138,7 @@ def print_help():
     print ('\t-v, --verbose')
     print ('\t\tshow log in DEBUG')
 
+
 def get_credentials_from_file():
     f = open("twitterCredentials.txt", "r")
     lines = f.readlines()
@@ -146,6 +148,7 @@ def get_credentials_from_file():
     access_secret = str(lines[4]).replace("\n", "")
     f.close()
     return consumer_key, consumer_secret, access_key, access_secret
+
 
 def save_tweets_as_json(tweetslist, output):
     if not os.path.exists(output):

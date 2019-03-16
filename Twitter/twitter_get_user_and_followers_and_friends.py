@@ -8,14 +8,17 @@ from twitter_client import get_twitter_client
 
 MAX_FRIENDS = 15000
 
+
 def usage():
     print("Usage:")
     print("python {} <username>".format(sys.argv[0]))
 
+
 def paginate(items, n):
     """Generate n-sized chunks from items"""
     for i in range(0, len(items), n):
-        yield items[i:i+n]
+        yield items[i:i + n]
+
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
@@ -41,7 +44,7 @@ if __name__ == '__main__':
             for chunk in paginate(followers, 100):
                 users = client.lookup_users(user_ids=chunk)
                 for user in users:
-                    f.write(json.dumps(user._json)+"\n")
+                    f.write(json.dumps(user._json) + "\n")
             if len(followers) == 5000:
                 print("More results available. Sleeping for 60 seconds to avoid rate limit")
                 time.sleep(60)
@@ -53,7 +56,7 @@ if __name__ == '__main__':
             for chunk in paginate(friends, 100):
                 users = client.lookup_users(user_ids=chunk)
                 for user in users:
-                    f.write(json.dumps(user._json)+"\n")
+                    f.write(json.dumps(user._json) + "\n")
             if len(friends) == 5000:
                 print("More results available. Sleeping for 60 seconds to avoid rate limit")
                 time.sleep(60)
