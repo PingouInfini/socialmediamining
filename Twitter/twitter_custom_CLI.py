@@ -103,7 +103,7 @@ def get_all_tweets(argv):
         nb_TW_already_get += nb_TW_to_get
 
         # save tweets as json files
-        save_tweets_as_json(new_tweets, output)
+        save_tweets_as_json(new_tweets, jsonoutput)
         # save media if asked
         if (getimage):
             save_media(new_tweets, mediaoutput)
