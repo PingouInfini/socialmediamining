@@ -1,10 +1,13 @@
 import sys
-import json
 import folium
+import time
 from tweepy import Cursor
 from twitter_client import get_twitter_client
 from folium.plugins import MarkerCluster
-from folium import plugins
+from geopy import geocoders
+
+# dico of already resolved {location : coord}
+resolved_locations = {}
 
 
 def usage():
@@ -12,37 +15,104 @@ def usage():
     print("python {} <username> <filename.html>".format(sys.argv[0]))
 
 
-def make_geojson_from_user_timeline():
-    for page in Cursor(client.user_timeline, screen_name=user, count=200).pages(16):
-        for status in page:
-            tweet = status._json
-            try:
-                if tweet['coordinates']:
-                    geo_json_feature = {
-                        "type": "Feature",
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": tweet['coordinates']['coordinates']
-                        },
-                        "properties": {
-                            "text": tweet['text'],
-                            "created_at": tweet['created_at']
-                        }
-                    }
-                    geo_data['features'].append(geo_json_feature)
-            except KeyError:
-                continue
-
-
-def plot_location_in_clustered_map():
+def create_clustered_map():
+    # create map
     tweet_map = folium.Map(location=[50, 5],
                            zoom_start=3,
                            tiles='Stamen Terrain')
     marker_cluster = MarkerCluster().add_to(tweet_map)
-    geojson_layer = folium.GeoJson(data=geo_data,
-                                   name='geojson')
-    geojson_layer.add_to(marker_cluster)
+
+    # get tweet from user timeline and plot them in map
+    for page in Cursor(client.user_timeline, screen_name=user, count=200).pages(16):
+        for status in page:
+            tweet = status._json
+
+            if tweet['coordinates'] is not None:
+                lng = tweet['coordinates']['coordinates'][0]
+                lat = tweet['coordinates']['coordinates'][1]
+                # prepare popup to show for each marker (content = tweet)
+                html_popup = create_html_popup(lat, lng, tweet)
+                # create markers and add them to the map
+                folium.Marker([lat, lng], popup=html_popup).add_to(marker_cluster)
+            elif tweet['place'] is not None:
+                # relevance-based search by location and name
+                (lat, lng) = geodecode(tweet['place']['full_name'])
+                if lat == 0 and lng == 0:
+                    # relevance-based search by different location and name values
+                    (lat, lng) = geodecode(tweet['contributors'], ['coordinates'])
+                    if lat == 0 and lng == 0:
+                        pass
+
+                # prepare popup to show for each marker (content = tweet)
+                html_popup = create_html_popup(lat, lng, tweet)
+                # create markers and add them to the map
+                folium.Marker([lat, lng], popup=html_popup).add_to(marker_cluster)
+            else:
+                pass
+
     tweet_map.save(outputfile)
+
+
+def create_html_popup(lat, lng, tweet):
+    html = """
+    <div class="content" style="font-family:Segoe UI,Arial,sans-serif">
+    <div style="padding-bottom: 10px">
+    <strong>{}</strong><span>&nbsp;</span><span style="color:#657786;">@{} - {}</span></a>
+    <br/>{}
+    </div>
+    {}
+    <div>
+    <span style="color:#657786;">depuis </span> <span style="color:#0084b4;">{}{}</span>
+    </div>
+    </div>
+    """
+
+    html_popup = html.format(tweet['user']['name'], tweet['user']['screen_name'], date_beautifier(tweet['created_at']),
+                             tweet['text'],
+                             add_media_if_exists(tweet), tweet['place']['full_name'],
+                             "[" + str(lng) + "," + str(lat) + "]")
+    return html_popup
+
+
+def date_beautifier(created_at):
+    #TODO: convert date in JJ/MM/AAAA hh:mm:ss
+    return created_at
+
+
+def add_media_if_exists(tweet):
+    medias = ""
+
+    media_div = """
+    <div style="padding-bottom: 10px">
+    <img style="width:250px;"
+    src="{}"
+    alt="img" />
+    </div>
+    """
+
+    try:
+        for media in tweet['entities']['media']:
+            media_url = media['media_url']
+            # TODO: we can get media and store them from this <media_url>
+            medias += media_div.format(media_url)
+
+        return medias
+    except:
+        # pas de media...
+        return ""
+
+
+def geodecode(location):
+    # check if location already resolved
+    if location in resolved_locations:
+        loc = resolved_locations.get(location, "none")
+    else:
+        g = geocoders.Nominatim(user_agent="testmyspecificCustomTestamoi")
+        loc = g.geocode(location, timeout=10)
+        # store location and coord
+        resolved_locations[location] = loc
+
+    return loc.latitude, loc.longitude
 
 
 if __name__ == '__main__':
@@ -53,12 +123,5 @@ if __name__ == '__main__':
     outputfile = sys.argv[2]
     client = get_twitter_client()
 
-    geo_data = {
-        "type": "FeatureCollection",
-        "features": []
-    }
-
-    # get tweet from timeline, and create a [geojson feature] with tweet coordinates
-    make_geojson_from_user_timeline()
-    # plot locations in a clustered map
-    plot_location_in_clustered_map()
+    # get tweet from timeline, and create a map with tweet + coordinates
+    create_clustered_map()
