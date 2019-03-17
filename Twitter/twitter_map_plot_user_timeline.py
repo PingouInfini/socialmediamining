@@ -56,27 +56,26 @@ def create_clustered_map():
 def create_html_popup(lat, lng, tweet):
     html = """
     <div class="content" style="font-family:Segoe UI,Arial,sans-serif">
-    <div style="padding-bottom: 10px">
-    <strong>{}</strong><span>&nbsp;</span><span style="color:#657786;">@{} - {}</span></a>
-    <br/>{}
-    </div>
-    {}
-    <div>
-    <span style="color:#657786;">depuis </span> <span style="color:#0084b4;">{}{}</span>
-    </div>
+        <div style="padding-bottom: 10px">
+            <strong>{}</strong><span>&nbsp;</span><span style="color:#657786;">@{} - {}</span></a>
+            <br/>{}
+        </div>
+        {}
+        <div>
+            <span style="color:#657786;">depuis </span> <span style="color:#0084b4;">{}{}</span>
+        </div>
     </div>
     """
 
     html_popup = html.format(tweet['user']['name'], tweet['user']['screen_name'], date_beautifier(tweet['created_at']),
                              tweet['text'],
                              add_media_if_exists(tweet), tweet['place']['full_name'],
-                             "[" + str(lng) + "," + str(lat) + "]")
+                             " [" + str(lng) + "," + str(lat) + "]")
     return html_popup
 
 
 def date_beautifier(created_at):
-    #TODO: convert date in JJ/MM/AAAA hh:mm:ss
-    return created_at
+    return time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(created_at, '%a %b %d %H:%M:%S +0000 %Y'))
 
 
 def add_media_if_exists(tweet):
