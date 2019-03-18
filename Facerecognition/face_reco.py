@@ -3,7 +3,7 @@ import glob, os
 
 try:
     # Load the jpg files into numpy arrays
-    chuck_image = face_recognition.load_image_file("face_recognition_source/trump.jpg")
+    chuck_image = face_recognition.load_image_file("face_recognition_source/biden.jpg")
     obama_image = face_recognition.load_image_file("face_recognition_source/obama.jpg")
     unknown_image = face_recognition.load_image_file("face_recognition_source/obama2.jpg")
 
@@ -18,7 +18,7 @@ try:
         obama_face_encoding
     ]
 
-    os.chdir("face_recognition_source/president")
+    os.chdir("downloads/president")
     for file in glob.glob("*.jpg"):
         print(file)
         #list_of_unknown_face_encoding.append(face_recognition.face_encodings(face_recognition.load_image_file(file))[0])
