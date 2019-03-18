@@ -8,6 +8,8 @@ stashed
 *.txt
 *.pickle
 *.png
+*.jpg
+*.jpeg
 *.html
 
 ######################
