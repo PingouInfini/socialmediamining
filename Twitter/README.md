@@ -9,27 +9,25 @@ create an app & get twitter tokens from https://developer.twitter.com/en/apps
 ###### 2° Autres modules
 - 2D plotting  
         
-        pip install matplotlib
+      pip install matplotlib
 
 - wordcloud 
 
-        pip install wordcloud
+      pip install wordcloud
         
 - nltk
 
-        pip install nltk
-        python
-        >>> import nltk
-        >>> nltk.download()
-        /!\ add NLTK_DATA varEnv qui cible le répertoire du download /!\
+      pip install nltk
+      python
+      >>> import nltk
+      >>> nltk.download()
+      /!\ add NLTK_DATA varEnv qui cible le répertoire du download /!\
 
 - Others  
-    
-        pip install Pillow
-    
-        pip install stop-words
-        pip install folium
-        pip install geopy
+
+      pip install stop-words
+      pip install folium
+      pip install geopy
 
  
  =
