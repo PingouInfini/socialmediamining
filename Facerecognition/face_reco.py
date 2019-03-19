@@ -3,7 +3,6 @@ import glob, os, datetime, shutil
 
 
     #Le but de ce script est de filtrer les images du répertoire enrichi par google-images-download, et d'enregistrer les valides dans un nouveau répertoire
-    # TODO : IMPORTANT -> il faut gérer les images sans visage, pour éviter que le programme ne s'arrête avant d'avoir parcouru tout le dossier
 
 try:
 
@@ -36,16 +35,26 @@ try:
     at_least_one_true = False
     for file in glob.glob("*.jpg"):
 
+        #La commande ci-dessous ajoute la personne, si elle n'est pas connue à une liste de personnes inconnues
         #list_of_unknown_face_encoding.append(face_recognition.face_encodings(face_recognition.load_image_file(file))[0])
-        # results is an array of True/False telling if the unknown face matched anyone in the known_faces array
-        results = face_recognition.compare_faces(known_faces, face_recognition.face_encodings(face_recognition.load_image_file(file))[0])
 
-        if results[0] == True:
-            shutil.copy2(file, new_dir)
-            at_least_one_true = True
+        # results is an array of True/False telling if the unknown face matched anyone in the known_faces array
+        image = face_recognition.load_image_file(file)
+        face_locations = face_recognition.face_locations(image)
+
+        if (len(face_locations) > 0 ):
+
+            results = face_recognition.compare_faces(known_faces, face_recognition.face_encodings(image)[0])
+
+            if results[0] == True:
+                shutil.copy2(file, new_dir)
+                at_least_one_true = True
+
+        else :
+            print("No face was detected on this picture")
 
     if (at_least_one_true == True) :
-        print("Le candidat a été identifié au moins sur une photo")
+        print("The candidate was observed at least on one picture")
 
         #print("Is the unknown face a picture of Obama? {}".format(results[1]))
         #print("Is the unknown face a new person that we've never seen before? {}".format(not True in results))
